@@ -2,12 +2,6 @@
 using OutdoorPlanner.Email;
 using OutdoorPlanner.Core;
 using OutdoorPlanner.Database;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OutdoorPlanner
 {
@@ -16,14 +10,18 @@ namespace OutdoorPlanner
         internal static string _openWeatherApiKey;
         internal static string _connectionString;
         internal static EmailConfiguration _emailConfiguration;
+        private const int DAYS_COUNT = 4;
         static void Main()
         {
+            Logger.Info("Начало работы программы");
             try
             {
+                Logger.Info("Загрузка конфигурации приложения");
                 ConfigurationLoader.LoadConfiguration();
 
                 using (EventContext db = new EventContext())
                 {
+                    Logger.Info("Отправка уведомлений о предстоящих мероприятиях");
                     EmailSender.SendNotification(db, _emailConfiguration);
                     DbWorker.DeleteByDate(db);
 
@@ -38,42 +36,67 @@ namespace OutdoorPlanner
                                 "\n2. Зарегистрировать новое мероприятие");
 
                             if (!int.TryParse(Console.ReadLine(), out int choice))
+                            {
+                                Logger.Error("Выбрано некорректное действие");
                                 throw new ArgumentNullException("Выберите корректное действие!");
-
+                            }
                             if (choice == 1)
                             {
+                                Logger.Info("Вывод данных о мероприятиях");
                                 var idMap = DbWorker.PrintData(db);
-                                Console.WriteLine("\nВыберите дальнешее действие:" +
-                                    "\n1. Зарегистрировать новое мероприятие" +
-                                    "\n2. Удалить мероприятие" +
-                                    "\n3. Выйти из программы");
 
-                                if (!int.TryParse(Console.ReadLine(), out int choice1))
-                                    throw new ArgumentNullException("Выберите корректное действие!");
-
-                                if (choice1 == 1) choice = 2;
-                                else if (choice1 == 2)
+                                if (idMap.Count != 0)
                                 {
-                                    Console.WriteLine("Введите id мероприятия для удаления");
-                                    if (!int.TryParse(Console.ReadLine(), out int id))
-                                        throw new ArgumentNullException("Введите корректный id!");
-                                    DbWorker.DeleteById(db, idMap, id);
+                                    Console.WriteLine("\nВыберите дальнешее действие:" +
+                                        "\n1. Зарегистрировать новое мероприятие" +
+                                        "\n2. Удалить мероприятие" +
+                                        "\n3. Выйти из программы");
+
+                                    if (!int.TryParse(Console.ReadLine(), out int choice1))
+                                    {
+                                        Logger.Error("Выбрано некорректное действие");
+                                        throw new ArgumentNullException("Выберите корректное действие!");
+                                    }
+                                    if (choice1 == 1) choice = 2;
+                                    else if (choice1 == 2)
+                                    {
+                                        Console.WriteLine("Введите id мероприятия для удаления");
+                                        if (!int.TryParse(Console.ReadLine(), out int id))
+                                        {
+                                            Logger.Error("Введен некорректный id");
+                                            throw new ArgumentNullException("Введите корректный id!");
+                                        }
+                                        Logger.Info($"Удаление мероприятия с id = {id}");
+                                        DbWorker.DeleteById(db, idMap, id);
+                                    }
+                                    else if (choice1 == 3)
+                                    {
+                                        Logger.Info("Завершение работы программы");
+                                        return;
+                                    }
+                                    if (choice1 < 0 || choice1 > 3)
+                                    {
+                                        Logger.Error("Выбрано некорректное действие");
+                                        throw new ArgumentNullException("Выберите корректное действие!");
+                                    }
                                 }
-                                else if (choice1 == 3) return;
-                                if (choice1 < 0 || choice1 > 3)
-                                    throw new ArgumentNullException("Выберите корректное действие!");
                             }
                             if (choice == 2)
                             {
+                                Logger.Info("Регистрация нового мероприятия");
                                 RunApplication(db);
                             }
                             if (choice < 1 || choice > 2)
+                            {
+                                Logger.Error("Выбрано некорректное действие");
                                 throw new ArgumentNullException("Выберите корректное действие!");
+                            }
                             restartNeeded = AskForRestart("Желаете перезапустить приложение? (y/n)");
                         }
                         catch (Exception ex)
                         {
                             Console.WriteLine($"Произошла ошибка: {ex.Message}");
+                            Logger.Error($"Произошла ошибка: {ex.Message}");
                             restartNeeded = AskForRestart("Желаете перезапустить приложение? (y/n)");
                         }
                     } while (restartNeeded);
@@ -82,6 +105,7 @@ namespace OutdoorPlanner
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                Logger.Error($"Произошла ошибка: {ex.Message}");
             }
         }
 
@@ -97,7 +121,6 @@ namespace OutdoorPlanner
         {
             try
             {
-                int daysCount = 4;
                 Event newEvent = new Event();
 
                 Console.WriteLine("=== Служба планировщика мероприятий запущена ===");
@@ -117,7 +140,7 @@ namespace OutdoorPlanner
 
                 Console.WriteLine("Погода в следующие дни: ");
 
-                var weatherResponse = WeatherForecast.GetWeatherForecast(newEvent.Location, daysCount);
+                var weatherResponse = WeatherForecast.GetWeatherForecast(newEvent.Location, DAYS_COUNT);
                 int i = 1;
 
                 foreach (var weather in weatherResponse.List)
@@ -141,9 +164,14 @@ namespace OutdoorPlanner
 
                 Console.WriteLine("Выберите подходящую дату и введите её индекс: ");
                 if (!int.TryParse(Console.ReadLine(), out int chosenIndex))
+                {
+                    Logger.Error("Выбран некорректный индекс");
                     throw new ArgumentNullException("Выберите дату и время!");
+                }
+
                 if (chosenIndex < 0 || chosenIndex > weatherResponse.List.Max(x => x.SuitableIndex))
                 {
+                    Logger.Error("Выбран некорректный индекс");
                     throw new ArgumentOutOfRangeException("Введите корректный индекс!");
                 }
 
@@ -171,6 +199,7 @@ namespace OutdoorPlanner
 
                 EmailSender.RegisterEvent(newEvent, _emailConfiguration);
 
+                Logger.Info("Мероприятие успешно зарегистрировано");
                 Console.WriteLine("Мероприятие успешно зарегистрировано!");
             }
             catch
@@ -196,6 +225,7 @@ namespace OutdoorPlanner
             }
             catch
             {
+                Logger.Error("Введена некорректная почта");
                 return false;
             }
         }
@@ -204,6 +234,7 @@ namespace OutdoorPlanner
         {
             if (string.IsNullOrEmpty(value))
             {
+                Logger.Error(exMessage);
                 throw new ArgumentNullException(exMessage);
             }
             return value;

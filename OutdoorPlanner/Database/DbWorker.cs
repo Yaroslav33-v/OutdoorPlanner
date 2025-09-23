@@ -1,9 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OutdoorPlanner.Configuration;
 
 namespace OutdoorPlanner.Database
 {
@@ -25,8 +20,9 @@ namespace OutdoorPlanner.Database
             }
             else
             {
-                throw new ArgumentNullException("Нет запланированных событий.");
+                Console.WriteLine("Нет запланированных событий.");
             }
+            Logger.Info($"Запланировано {idMap.Count} событий");
             return idMap;
         }
 
@@ -41,6 +37,7 @@ namespace OutdoorPlanner.Database
                 foreach (var e in eventsToDelete)
                 {
                     db.Events.Remove(e);
+                    Logger.Info($"Удалено мероприятие {e.Name}");
                 }
                 Console.WriteLine("Все прошедшие события удалены!");
                 db.SaveChanges();
@@ -55,10 +52,12 @@ namespace OutdoorPlanner.Database
             {
                 db.Events.Remove(eventToDelete);
                 db.SaveChanges();
+                Logger.Info($"Событие с ID {id} успешно удалено");
                 Console.WriteLine($"Событие с ID {id} успешно удалено.");
             }
             else
             {
+                Logger.Info($"Событие с ID {id} не найдено");
                 throw new ArgumentNullException($"Событие с ID {id} не найдено.");
             }
         }

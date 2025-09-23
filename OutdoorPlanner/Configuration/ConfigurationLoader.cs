@@ -1,10 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using OutdoorPlanner.Email;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OutdoorPlanner.Configuration
 {
@@ -18,7 +13,7 @@ namespace OutdoorPlanner.Configuration
                     .SetBasePath(GetProjectRootPath())
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                     .Build();
-
+                
                 Program._openWeatherApiKey = configuration["OpenWeather:ApiKey"]
                      ?? throw new ArgumentNullException("OpenWeather:ApiKey не найден в конфигурации");
 
@@ -42,6 +37,7 @@ namespace OutdoorPlanner.Configuration
             }
             catch (Exception ex)
             {
+                Logger.Error($"Ошибка загрузки конфигурации: {ex.Message}");
                 throw new Exception($"Ошибка загрузки конфигурации: {ex.Message}");
             }
         }

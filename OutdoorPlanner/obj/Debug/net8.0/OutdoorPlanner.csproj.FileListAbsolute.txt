@@ -40,3 +40,5 @@ C:\Users\Yaroslav\source\repos\OutdoorPlanner\OutdoorPlanner\obj\Debug\net8.0\re
 C:\Users\Yaroslav\source\repos\OutdoorPlanner\OutdoorPlanner\obj\Debug\net8.0\OutdoorPlanner.pdb
 C:\Users\Yaroslav\source\repos\OutdoorPlanner\OutdoorPlanner\obj\Debug\net8.0\OutdoorPlanner.genruntimeconfig.cache
 C:\Users\Yaroslav\source\repos\OutdoorPlanner\OutdoorPlanner\obj\Debug\net8.0\ref\OutdoorPlanner.dll
+C:\Users\Yaroslav\source\repos\OutdoorPlanner\OutdoorPlanner\bin\Debug\net8.0\NLog.dll
+C:\Users\Yaroslav\source\repos\OutdoorPlanner\OutdoorPlanner\obj\Debug\net8.0\OutdoorPlanner.sourcelink.json

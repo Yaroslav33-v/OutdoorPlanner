@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OutdoorPlanner")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+172c25df01be1d8b3d167d26c4f114970cda9c39")]
 [assembly: System.Reflection.AssemblyProductAttribute("OutdoorPlanner")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OutdoorPlanner")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

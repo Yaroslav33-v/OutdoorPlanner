@@ -1,17 +1,7 @@
 ﻿using Newtonsoft.Json;
-using OutdoorPlanner;
-using OutdoorPlanner.Core;
 using OutdoorPlanner.ClassesForWeather;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Runtime.InteropServices;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
+using OutdoorPlanner.Configuration;
 
 namespace OutdoorPlanner.Core
 {
@@ -26,6 +16,7 @@ namespace OutdoorPlanner.Core
 
             try
             {
+                Logger.Info("Подключение к api");
                 HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(urlWeather);
                 HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
                 string response;
@@ -38,10 +29,12 @@ namespace OutdoorPlanner.Core
             }
             catch (WebException)
             {
+                Logger.Error("Используется несуществующий город");
                 throw new ArgumentNullException("Такого города не существует!");
             }
             catch (Exception ex)
             {
+                Logger.Error("Ошибка при подключении к api");
                 throw ex;
             }
             return weatherResponse;
@@ -51,10 +44,11 @@ namespace OutdoorPlanner.Core
         {
             WeatherResponse weatherResponse;
             string apiKey = Program._openWeatherApiKey;
-            string urlWeather = $"https://api.openweathermap.org/data/2.5/forecast?q={e.Location}&cnt=9&appid={apiKey}&units=metric&lang=ru";
+            string urlWeather = $"https://api.openweathermap.org/data/2.5/forecast?q={e.Location}&cnt=8&appid={apiKey}&units=metric&lang=ru";
 
             try
             {
+                Logger.Info("Подключение к api");
                 HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(urlWeather);
                 HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
                 string response;
@@ -73,10 +67,12 @@ namespace OutdoorPlanner.Core
             }
             catch (WebException)
             {
+                Logger.Error("Используется несуществующий город");
                 throw new ArgumentNullException("Такого города не существует!");
             }
             catch (Exception ex)
             {
+                Logger.Error("Ошибка при подключении к api");
                 throw ex;
             }
         }

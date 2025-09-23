@@ -1,12 +1,8 @@
 ﻿using OutdoorPlanner.Core;
 using OutdoorPlanner.Configuration;
 using OutdoorPlanner.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Mail;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace OutdoorPlanner.Email
 {
@@ -46,7 +42,9 @@ namespace OutdoorPlanner.Email
                     Это письмо отправлено автоматически. Пожалуйста, не отвечайте на него.";
 
                 configuration.smtpClient.Send(mailMessage);
+                Logger.Info("Сообщение о регистрации мероприятия отправлено");
             }
+
         }
 
         public static void SendNotification(EventContext db, EmailConfiguration configuration)
@@ -110,6 +108,7 @@ namespace OutdoorPlanner.Email
                             configuration.smtpClient.Send(mailMessage);
                         }
                         e.IsNotificated = true;
+                        Logger.Info($"Уведомление о мерприятии {e.Name} отправлено");
                     }
                 }
                 db.SaveChanges();
